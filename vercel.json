@@ -1,32 +1,8 @@
 {
+  "buildCommand": "cd web && npm install && npm run build",
+  "outputDirectory": "web/dist",
   "rewrites": [
-    {
-      "source": "/config/(.*)",
-      "destination": "/main.py"
-    },
-    {
-      "source": "/analysis/(.*)",
-      "destination": "/main.py"
-    },
-    {
-      "source": "/docs",
-      "destination": "/main.py"
-    },
-    {
-      "source": "/openapi.json",
-      "destination": "/main.py"
-    },
-    {
-      "source": "/health",
-      "destination": "/main.py"
-    },
-    {
-      "source": "/",
-      "destination": "/frontend/index.html"
-    },
-    {
-      "source": "/(.*)",
-      "destination": "/frontend/$1"
-    }
+    { "source": "/api/(.*)", "destination": "/api/index.py" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
