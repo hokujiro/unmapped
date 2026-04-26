@@ -1,0 +1,32 @@
+{
+  "rewrites": [
+    {
+      "source": "/config/(.*)",
+      "destination": "/main.py"
+    },
+    {
+      "source": "/analysis/(.*)",
+      "destination": "/main.py"
+    },
+    {
+      "source": "/docs",
+      "destination": "/main.py"
+    },
+    {
+      "source": "/openapi.json",
+      "destination": "/main.py"
+    },
+    {
+      "source": "/health",
+      "destination": "/main.py"
+    },
+    {
+      "source": "/",
+      "destination": "/unmapped front/Unmapped Prototype.html"
+    },
+    {
+      "source": "/(.*)",
+      "destination": "/unmapped front/$1"
+    }
+  ]
+}
