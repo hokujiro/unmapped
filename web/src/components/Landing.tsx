@@ -111,7 +111,7 @@ export default function Landing({ onPick }: Props) {
   );
 }
 
-function DoorCard({ kind, label, title, sub, blurb, bgColor, arrowColor, onPick }: {
+function DoorCard({ kind, label, title, sub, blurb, arrowColor, onPick }: {
   kind: Portal; label: string; title: string; sub: string; blurb: string;
   bgColor: string; arrowColor: string; onPick: (p: Portal) => void;
 }) {

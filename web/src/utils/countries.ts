@@ -18,7 +18,7 @@ const ALPHA3_TO_ALPHA2: Record<string, string> = {
   TON: "TO", TUN: "TN", TZA: "TZ", UGA: "UG", UKR: "UA", UZB: "UZ",
   VEN: "VE", VNM: "VN", YEM: "YE", ZAF: "ZA", ZMB: "ZM", ZWE: "ZW",
   // numeric ISO used by TopoJSON world-atlas
-  GBR: "GB", USA: "US", CHN: "CN", RUS: "RU", BRA: "BR",
+  GBR: "GB", USA: "US", CHN: "CN", RUS: "RU",
 };
 
 export function alpha3ToAlpha2(code: string): string {

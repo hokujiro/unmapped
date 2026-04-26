@@ -155,7 +155,7 @@ function YouthProfile({ story, setStory, name, setName, age, setAge, edu, setEdu
   );
 }
 
-function YouthPassport({ name, story, country, edu, age, onNext }: { name: string; story: string; country: string; edu: string; age: number; onNext: () => void }) {
+function YouthPassport({ name, story, country, edu, onNext }: { name: string; story: string; country: string; edu: string; age: number; onNext: () => void }) {
   const skills = inferSkills(story);
   const c = COUNTRIES.find(cc => cc.code === country)!;
 
@@ -257,7 +257,7 @@ function SkillCard({ s }: { s: InferredSkill }) {
   );
 }
 
-function YouthOpportunities({ country, onNext }: { country: string; onNext: () => void }) {
+function YouthOpportunities({ onNext }: { country: string; onNext: () => void }) {
   const ops = [
     { role: "Field Solar Technician", org: "Achieve Solar Ghana", wage: "GHS 1,800–2,400 / mo", honest: "Encaja bien con lo que sabes. Requiere 6 meses de formación TVET en instalación fotovoltaica.", fit: 0.91, gap: ["wiring & inverter setup"], sector: "Renewable energy", training: "6 mo TVET" },
     { role: "Phone repair shop — supervisor", org: "Tech Park Plaza, Accra", wage: "GHS 1,400–1,900 / mo", honest: "Tu oficio actual encaja directamente. El reto: liderar a 2–3 personas y manejar la caja.", fit: 0.84, gap: ["small team supervision"], sector: "Trade & retail", training: "4 wk evening" },
