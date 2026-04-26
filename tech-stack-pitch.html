@@ -1,0 +1,543 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<title>Unmapped — Technical Stack · 1 min</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#16241c; --ink-soft:#2d3b32; --ink-mute:#5b6b62; --ink-faint:#8a978f;
+  --paper:#f6f1e7; --paper-2:#efe8d8; --paper-card:#fdfaf2;
+  --line:#d8cfba; --green:#1f5d3a; --green-2:#2d7a4d; --green-pale:#ecf3e8;
+  --coral:#e26a4a; --sky:#2f6fa3; --sky-pale:#dde9f4; --ocre:#d3a44a;
+  --sun:#f3c75a;
+}
+html,body{width:100%;height:100%;overflow:hidden;background:#111;user-select:none}
+.display{font-family:'Fraunces',Georgia,serif;font-variation-settings:"SOFT" 80;letter-spacing:-0.02em;line-height:1}
+.serif-italic{font-family:'Fraunces',Georgia,serif;font-style:italic;font-variation-settings:"SOFT" 100}
+.mono{font-family:'JetBrains Mono',monospace}
+
+/* ── Deck shell ── */
+#deck{position:relative;width:100%;height:100%}
+.slide{
+  position:absolute;inset:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:60px 80px;
+  opacity:0;pointer-events:none;
+  transition:opacity .55s cubic-bezier(.4,0,.2,1), transform .55s cubic-bezier(.4,0,.2,1);
+  transform:translateX(40px);
+}
+.slide.active{opacity:1;pointer-events:all;transform:translateX(0)}
+.slide.out{opacity:0;transform:translateX(-40px)}
+
+/* ── Nav ── */
+#dots{
+  position:fixed;bottom:28px;left:50%;transform:translateX(-50%);
+  display:flex;gap:10px;z-index:100;
+}
+.dot{
+  width:8px;height:8px;border-radius:999px;
+  background:rgba(255,255,255,0.25);cursor:pointer;
+  transition:all .3s ease;border:none;padding:0;
+}
+.dot.active{width:28px;background:#fff}
+#arrows{
+  position:fixed;bottom:22px;right:36px;
+  display:flex;gap:8px;z-index:100;
+}
+.arr{
+  width:36px;height:36px;border-radius:999px;border:1px solid rgba(255,255,255,0.2);
+  background:rgba(255,255,255,0.06);color:rgba(255,255,255,0.7);
+  cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;
+  transition:background .15s;
+}
+.arr:hover{background:rgba(255,255,255,0.15)}
+
+/* ── Timer ── */
+#timer-bar{
+  position:fixed;top:0;left:0;height:3px;background:var(--coral);
+  transition:width .5s linear;z-index:200;
+}
+#timer-label{
+  position:fixed;top:12px;right:20px;z-index:200;
+  font-family:'JetBrains Mono',monospace;font-size:11px;
+  color:rgba(255,255,255,0.4);letter-spacing:1px;
+}
+
+/* ── Slide 1 — Hook (dark) ── */
+#s1{background:linear-gradient(145deg,#0d1f15 0%,#103a23 60%,#0a1a10 100%)}
+#s1 .wordmark{display:flex;align-items:center;gap:10px;margin-bottom:40px}
+#s1 .wordmark svg{opacity:.9}
+#s1 .wordmark span{font-family:'Fraunces',serif;font-size:28px;font-weight:600;letter-spacing:-.02em;color:#fff}
+#s1 .wordmark .dot{width:auto;height:auto;border-radius:0;background:transparent;color:var(--coral)}
+#s1 h1{font-family:'Fraunces',Georgia,serif;font-variation-settings:"SOFT" 80;font-size:clamp(52px,7vw,88px);font-weight:500;letter-spacing:-.02em;line-height:.95;color:#fff;margin-bottom:32px;text-align:center}
+#s1 h1 em{font-style:italic;color:var(--sun)}
+#s1 .tagline{display:flex;gap:32px;align-items:center;font-size:15px;color:rgba(255,255,255,0.55);font-weight:500;letter-spacing:.02em;margin-bottom:48px}
+#s1 .tagline span{color:rgba(255,255,255,0.25)}
+#s1 .badges{display:flex;gap:12px;flex-wrap:wrap;justify-content:center}
+#s1 .badge{padding:8px 18px;border-radius:999px;font-size:13px;font-weight:600;font-family:'JetBrains Mono',monospace;letter-spacing:.5px}
+#s1 .badge.g{background:rgba(31,93,58,.5);color:#7ecf9e;border:1px solid rgba(63,156,105,.3)}
+#s1 .badge.c{background:rgba(226,106,74,.15);color:#f0a589;border:1px solid rgba(226,106,74,.3)}
+#s1 .badge.s{background:rgba(47,111,163,.15);color:#84b8db;border:1px solid rgba(47,111,163,.3)}
+#s1 .hint{margin-top:44px;font-size:12px;color:rgba(255,255,255,0.22);letter-spacing:1.5px;text-transform:uppercase;font-family:'JetBrains Mono',monospace}
+
+/* ── Slide 2 — API Stack (paper) ── */
+#s2{background:var(--paper)}
+#s2 .pre{font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-mute);margin-bottom:10px}
+#s2 h2{font-family:'Fraunces',serif;font-size:clamp(36px,4.5vw,58px);font-weight:500;color:var(--ink);margin-bottom:36px;letter-spacing:-.02em}
+#s2 h2 em{font-style:italic;color:var(--green)}
+.api-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;width:100%;max-width:1160px}
+.api-card{
+  background:var(--paper-card);border:1px solid var(--line);border-radius:20px;
+  padding:24px 22px 26px;display:flex;flex-direction:column;gap:12px;
+}
+.api-icon{width:40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.api-num{font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:1.5px;color:var(--ink-faint);font-weight:500}
+.api-name{font-family:'Fraunces',serif;font-size:22px;font-weight:500;letter-spacing:-.02em;line-height:1.1;color:var(--ink)}
+.api-tag{font-family:'JetBrains Mono',monospace;font-size:9.5px;letter-spacing:.5px;padding:3px 9px;border-radius:999px;font-weight:500;display:inline-block;margin-top:2px}
+.api-desc{font-size:13px;line-height:1.6;color:var(--ink-mute);flex:1}
+.api-card.green .api-icon{background:var(--green-pale);color:var(--green)}
+.api-card.green .api-tag{background:var(--green-pale);color:var(--green)}
+.api-card.coral .api-icon{background:#fbe6dd;color:#b8492a}
+.api-card.coral .api-tag{background:#fbe6dd;color:#b8492a}
+.api-card.sky   .api-icon{background:var(--sky-pale);color:var(--sky)}
+.api-card.sky   .api-tag{background:var(--sky-pale);color:var(--sky)}
+.api-card.ocre  .api-icon{background:#f4e6c4;color:#8a6a1c}
+.api-card.ocre  .api-tag{background:#f4e6c4;color:#8a6a1c}
+
+/* ── Slide 3 — Country Pack ── */
+#s3{background:var(--paper-2);padding:40px 70px}
+#s3>.inner{display:grid;grid-template-columns:1.1fr 1fr;gap:36px;max-width:1240px;width:100%;align-items:start}
+.yaml-block{
+  background:#0f1d14;border-radius:18px;padding:22px 26px;
+  border:1px solid rgba(63,156,105,.2);
+  overflow:hidden;
+}
+.yaml-block pre{tab-size:2}
+.yaml-block .yk{color:#7ecf9e}
+.yaml-block .yv{color:#f3c75a}
+.yaml-block .yl{color:#84b8db}
+.ann-list{display:flex;flex-direction:column;gap:8px;padding-top:4px}
+.ann{
+  padding:11px 14px;border-radius:12px;background:var(--paper-card);
+  border:1px solid var(--line);display:flex;gap:10px;align-items:flex-start;
+}
+.ann-icon{width:28px;height:28px;border-radius:8px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px}
+.ann-text h4{font-size:12.5px;font-weight:700;color:var(--ink);margin-bottom:2px}
+.ann-text p{font-size:11.5px;color:var(--ink-mute);line-height:1.45}
+
+/* ── Slide 4 — Data Backbone ── */
+#s4{background:var(--paper)}
+#s4>.inner{max-width:1100px;width:100%}
+.data-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:28px}
+.data-group{background:var(--paper-card);border:1px solid var(--line);border-radius:16px;padding:18px 16px}
+.data-group-title{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:12px;font-family:'JetBrains Mono',monospace}
+.data-source{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line-soft)}
+.data-source:first-of-type{border-top:none}
+.data-badge{font-family:'JetBrains Mono',monospace;font-size:9px;letter-spacing:.5px;padding:2px 8px;border-radius:999px;font-weight:600;flex-shrink:0}
+.data-desc{font-size:12px;color:var(--ink-mute);line-height:1.4}
+.data-powers{display:flex;flex-wrap:wrap;gap:6px;margin-top:20px}
+.power-chip{font-size:11px;font-weight:600;padding:5px 12px;border-radius:999px;background:var(--green-pale);color:var(--green);border:1px solid #c8debc}
+
+/* ── Slide 5 — Proof (dark) ── */
+#s5{background:linear-gradient(145deg,#0d1f15 0%,#103a23 100%)}
+#s5 .quote{
+  font-family:'Fraunces',serif;font-style:italic;font-variation-settings:"SOFT" 100;
+  font-size:clamp(24px,2.8vw,36px);line-height:1.45;color:rgba(255,255,255,0.9);
+  max-width:760px;text-align:center;border-left:none;margin:0 auto 48px;
+}
+#s5 .quote em{color:var(--sun);font-style:inherit}
+#s5 .stats{display:flex;gap:50px;justify-content:center;margin-bottom:44px}
+#s5 .stat-n{font-family:'Fraunces',serif;font-size:56px;font-weight:500;color:var(--sun);line-height:1;display:block}
+#s5 .stat-l{font-size:13px;color:rgba(255,255,255,0.5);font-weight:500;margin-top:4px;display:block;letter-spacing:.02em}
+#s5 .finale{font-family:'JetBrains Mono',monospace;font-size:13px;color:rgba(255,255,255,0.4);letter-spacing:1.5px;text-transform:uppercase}
+</style>
+</head>
+<body>
+
+<div id="timer-bar" style="width:0%"></div>
+<div id="timer-label">01:00</div>
+
+<div id="deck">
+
+  <!-- ════ SLIDE 1 — HOOK ════ -->
+  <section class="slide active" id="s1">
+    <div class="wordmark">
+      <svg width="28" height="28" viewBox="0 0 32 32" fill="none">
+        <circle cx="16" cy="16" r="14" stroke="#f3c75a" stroke-width="2"/>
+        <path d="M16 6 L18.5 14 L26 16 L18.5 18 L16 26 L13.5 18 L6 16 L13.5 14 Z" fill="#f3c75a"/>
+      </svg>
+      <span>unmapped<span class="dot" style="color:var(--coral)">.</span></span>
+    </div>
+    <h1 class="display">
+      600 million people.<br/>
+      <em>One missing layer.</em>
+    </h1>
+    <div class="tagline">
+      <span>4 APIs</span>
+      <span>·</span>
+      <span>1 config file</span>
+      <span>·</span>
+      <span>any LMIC country</span>
+    </div>
+    <div class="badges">
+      <span class="badge g">Passport API</span>
+      <span class="badge c">Risk Lens API</span>
+      <span class="badge s">Opportunity Graph API</span>
+      <span class="badge" style="background:rgba(211,164,74,.12);color:#e8c97a;border:1px solid rgba(211,164,74,.3)">Country Pack Spec</span>
+    </div>
+    <p class="hint">space or → to advance</p>
+  </section>
+
+  <!-- ════ SLIDE 2 — API STACK ════ -->
+  <section class="slide" id="s2">
+    <p class="pre">The infrastructure</p>
+    <h2 class="display" style="font-family:'Fraunces',serif;font-size:clamp(36px,4vw,52px);font-weight:500;color:var(--ink);margin-bottom:32px;letter-spacing:-.02em">
+      Four APIs. <em>One contract.</em>
+    </h2>
+    <div class="api-grid">
+      <div class="api-card green">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div class="api-icon">🔑</div>
+          <span class="api-num">01</span>
+        </div>
+        <div>
+          <div class="api-name">Passport<br/>API</div>
+          <span class="api-tag">POST /passport/infer</span>
+        </div>
+        <p class="api-desc">Turns a self-narrated story into a portable skill profile — ESCO codes, durability scores, ISCO occupation mapping, and a verifiable serial.</p>
+        <div style="padding:10px 12px;background:var(--green-pale);border-radius:10px;font-size:11px;color:var(--green);font-family:'JetBrains Mono',monospace;line-height:1.6">
+          story → skills + codes<br/>evidence → durability flags
+        </div>
+      </div>
+      <div class="api-card coral">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div class="api-icon">⚡</div>
+          <span class="api-num">02</span>
+        </div>
+        <div>
+          <div class="api-name">Risk Lens<br/>API</div>
+          <span class="api-tag">POST /readiness</span>
+        </div>
+        <p class="api-desc">Estimates near-term AI displacement risk and resilience per skill and sector. Applies the LMIC discount factor so results are calibrated to actual infrastructure, not US baselines.</p>
+        <div style="padding:10px 12px;background:#fbe6dd;border-radius:10px;font-size:11px;color:#b8492a;font-family:'JetBrains Mono',monospace;line-height:1.6">
+          ILO WP140 × lmic_factor<br/>= feasibility score
+        </div>
+      </div>
+      <div class="api-card sky">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div class="api-icon">🔗</div>
+          <span class="api-num">03</span>
+        </div>
+        <div>
+          <div class="api-name">Opportunity<br/>Graph API</div>
+          <span class="api-tag">POST /matching</span>
+        </div>
+        <p class="api-desc">Ranks reachable opportunities with visible econometric signals — ILOSTAT wages, WDI sector growth, HCI-adjusted demand curves — so every recommendation is auditable.</p>
+        <div style="padding:10px 12px;background:var(--sky-pale);border-radius:10px;font-size:11px;color:var(--sky);font-family:'JetBrains Mono',monospace;line-height:1.6">
+          skills → ranked roles<br/>+ wage + gap + training
+        </div>
+      </div>
+      <div class="api-card ocre">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start">
+          <div class="api-icon">📦</div>
+          <span class="api-num">04</span>
+        </div>
+        <div>
+          <div class="api-name">Country<br/>Pack Spec</div>
+          <span class="api-tag">POST /config/countries</span>
+        </div>
+        <p class="api-desc">Swaps labour data, education taxonomies, language, scripts, and risk calibration without code changes. One YAML object = a fully configured country deployment.</p>
+        <div style="padding:10px 12px;background:#f4e6c4;border-radius:10px;font-size:11px;color:#8a6a1c;font-family:'JetBrains Mono',monospace;line-height:1.6">
+          id: gha-urban-informal<br/>→ all APIs recalibrate
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ SLIDE 3 — COUNTRY PACK ════ -->
+  <section class="slide" id="s3">
+    <div class="inner">
+      <div>
+        <p class="mono" style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-mute);margin-bottom:10px">The unit of deployment</p>
+        <h2 class="display" style="font-family:'Fraunces',serif;font-size:clamp(28px,3.2vw,42px);font-weight:500;color:var(--ink);margin-bottom:18px;letter-spacing:-.02em">
+          One file.<br/><span style="font-style:italic;color:var(--green)">Any country.</span>
+        </h2>
+        <div class="yaml-block"><pre style="margin:0;font-family:'JetBrains Mono',monospace;font-size:11.5px;line-height:1.9;color:#c8d8c0"><span class="yk">country_pack</span>:
+  <span class="yk">id</span>: <span class="yv">gha-urban-informal-v1</span>
+  <span class="yk">ui_languages</span>: <span class="yl">[en]</span>
+
+  <span class="yk">education_mapping</span>:  <span class="yv">local_to_isced_v1</span>
+  <span class="yk">occupation_taxonomy</span>: <span class="yv">isco08</span>
+  <span class="yk">skills_taxonomy</span>:    <span class="yv">esco</span>
+  <span class="yk">task_enrichment</span>:    <span class="yv">onet</span>
+
+  <span class="yk">labour_signals</span>:
+    <span class="yk">wages</span>:      <span class="yv">ilostat_cond</span>
+    <span class="yk">employment</span>: <span class="yv">ilostat_lfs</span>
+    <span class="yk">macro</span>:      <span class="yv">wdi_hci</span>
+
+  <span class="yk">readiness</span>:
+    <span class="yk">genai_exposure</span>:      <span class="yv">ilo_genai_2025</span>
+    <span class="yk">legacy_automation</span>:   <span class="yv">frey_osborne_2013</span>
+    <span class="yk">digital_access</span>:      <span class="yl">[itu, wdi_electricity]</span>
+    <span class="yk">employer_constraints</span>: <span class="yl">[wbes, gld]</span>
+
+  <span class="yk">opportunities</span>:
+    <span class="yk">connectors</span>: <span class="yl">[csv, api, tavily_crawl]</span>
+
+  <span class="yk">policy_overlays</span>: <span class="yl">[women_business_and_the_law]</span></pre></div>
+      </div>
+      <div class="ann-list">
+        <div class="ann">
+          <div class="ann-icon" style="background:#f4e6c4;color:#8a6a1c">🪪</div>
+          <div class="ann-text">
+            <h4>Identity &amp; locale</h4>
+            <p>Country ID, UI language, and script. Swap this and every string in the UI localises automatically.</p>
+          </div>
+        </div>
+        <div class="ann">
+          <div class="ann-icon" style="background:var(--sky-pale);color:var(--sky)">🗂</div>
+          <div class="ann-text">
+            <h4>Taxonomy wiring</h4>
+            <p>Maps local education levels to ISCED; plugs ESCO, ISCO-08, and O*NET into the skill and task pipelines.</p>
+          </div>
+        </div>
+        <div class="ann">
+          <div class="ann-icon" style="background:var(--green-pale);color:var(--green)">📡</div>
+          <div class="ann-text">
+            <h4>Live labour signals</h4>
+            <p>Points each API at the right ILOSTAT/WDI series for <em>this country</em>. Wage and employment data refresh without a redeploy.</p>
+          </div>
+        </div>
+        <div class="ann">
+          <div class="ann-icon" style="background:#fbe6dd;color:#b8492a">⚡</div>
+          <div class="ann-text">
+            <h4>Risk calibration</h4>
+            <p>Selects the AI-exposure and automation baselines, then applies digital-access discounts specific to local infrastructure.</p>
+          </div>
+        </div>
+        <div class="ann">
+          <div class="ann-icon" style="background:#f0e6f4;color:#6a3085">🔌</div>
+          <div class="ann-text">
+            <h4>Job connectors &amp; policy</h4>
+            <p>CSV uploads, API feeds, or live crawl via Tavily. Policy overlays (e.g. WBL gender index) layer on top without touching core logic.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ SLIDE 4 — DATA BACKBONE ════ -->
+  <section class="slide" id="s4">
+    <div class="inner">
+      <p class="mono" style="font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:var(--ink-mute);margin-bottom:8px">Open data. Fully auditable.</p>
+      <h2 class="display" style="font-family:'Fraunces',serif;font-size:clamp(32px,3.8vw,48px);font-weight:500;color:var(--ink);letter-spacing:-.02em">
+        Every number has <span style="font-style:italic;color:var(--coral)">a source button.</span>
+      </h2>
+      <div class="data-grid">
+        <!-- Risk -->
+        <div class="data-group">
+          <div class="data-group-title" style="color:var(--coral)">⚡ AI Risk</div>
+          <div class="data-source">
+            <span class="data-badge" style="background:#fbe6dd;color:#b8492a">ILO-WP140</span>
+            <span class="data-desc">GenAI task exposure, ISCO-08 granularity (2024)</span>
+          </div>
+          <div class="data-source">
+            <span class="data-badge" style="background:#fbe6dd;color:#b8492a">ILO–WBG</span>
+            <span class="data-desc">LMIC feasibility discount — bottleneck study</span>
+          </div>
+          <div class="data-source">
+            <span class="data-badge" style="background:#fbe6dd;color:#b8492a">Frey-Osb.</span>
+            <span class="data-desc">Legacy automation baseline (2013) for cross-check</span>
+          </div>
+        </div>
+        <!-- Labour -->
+        <div class="data-group">
+          <div class="data-group-title" style="color:var(--green)">📊 Labour market</div>
+          <div class="data-source">
+            <span class="data-badge" style="background:var(--green-pale);color:var(--green)">ILOSTAT</span>
+            <span class="data-desc">Harmonised wages &amp; employment by sector</span>
+          </div>
+          <div class="data-source">
+            <span class="data-badge" style="background:var(--green-pale);color:var(--green)">WB-WDI</span>
+            <span class="data-desc">Sector employment shares, macro indicators</span>
+          </div>
+          <div class="data-source">
+            <span class="data-badge" style="background:var(--green-pale);color:var(--green)">WB-HCI</span>
+            <span class="data-desc">Human Capital Index — productivity potential</span>
+          </div>
+        </div>
+        <!-- Skills -->
+        <div class="data-group">
+          <div class="data-group-title" style="color:var(--sky)">🗂 Skills &amp; occupations</div>
+          <div class="data-source">
+            <span class="data-badge" style="background:var(--sky-pale);color:var(--sky)">ESCO v1.2</span>
+            <span class="data-desc">EU skills &amp; competences taxonomy</span>
+          </div>
+          <div class="data-source">
+            <span class="data-badge" style="background:var(--sky-pale);color:var(--sky)">O*NET 29</span>
+            <span class="data-desc">Task-level occupation data, US DOL</span>
+          </div>
+          <div class="data-source">
+            <span class="data-badge" style="background:var(--sky-pale);color:var(--sky)">ISCO-08</span>
+            <span class="data-desc">International standard occupation classification</span>
+          </div>
+        </div>
+        <!-- Education -->
+        <div class="data-group">
+          <div class="data-group-title" style="color:#8a6a1c">🎓 Education trajectories</div>
+          <div class="data-source">
+            <span class="data-badge" style="background:#f4e6c4;color:#8a6a1c">WCDE 2024</span>
+            <span class="data-desc">Wittgenstein SSP2 attainment projections to 2035</span>
+          </div>
+          <div class="data-source">
+            <span class="data-badge" style="background:#f4e6c4;color:#8a6a1c">ISCED</span>
+            <span class="data-desc">UNESCO education level mapping</span>
+          </div>
+        </div>
+        <!-- Digital -->
+        <div class="data-group">
+          <div class="data-group-title" style="color:#4a5ba3">🌐 Digital &amp; policy</div>
+          <div class="data-source">
+            <span class="data-badge" style="background:#eaecf8;color:#4a5ba3">ITU 2024</span>
+            <span class="data-desc">Internet penetration &amp; broadband access</span>
+          </div>
+          <div class="data-source">
+            <span class="data-badge" style="background:#eaecf8;color:#4a5ba3">WB-WBL</span>
+            <span class="data-desc">Women, Business &amp; the Law — gender barriers</span>
+          </div>
+          <div class="data-source">
+            <span class="data-badge" style="background:#eaecf8;color:#4a5ba3">WBES/GLD</span>
+            <span class="data-desc">Employer constraints &amp; labour dynamics</span>
+          </div>
+        </div>
+        <!-- Pattern -->
+        <div class="data-group" style="background:var(--green);border-color:var(--green-2)">
+          <div class="data-group-title" style="color:rgba(255,255,255,0.65)">The pattern</div>
+          <div style="margin-top:4px">
+            <p style="font-size:13px;color:rgba(255,255,255,0.85);line-height:1.6;margin-bottom:12px">Every source is open. Every number is auditable. The ⓘ button on every chart points directly to the dataset.</p>
+            <div class="data-powers" style="gap:6px">
+              <span style="font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.8)">12+ sources</span>
+              <span style="font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.8)">16 countries</span>
+              <span style="font-size:11px;font-weight:600;padding:4px 10px;border-radius:999px;background:rgba(255,255,255,0.12);color:rgba(255,255,255,0.8)">0 black boxes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ════ SLIDE 5 — THE PROOF ════ -->
+  <section class="slide" id="s5">
+    <p class="mono" style="font-size:11px;letter-spacing:2px;color:rgba(255,255,255,0.3);text-transform:uppercase;margin-bottom:36px">Why the jury should care</p>
+    <p class="quote">
+      "That single object — the country pack — proves the system is
+      <em>configurable, portable, and operationally realistic</em>
+      rather than hardcoded to one country or one demo path."
+    </p>
+    <div class="stats">
+      <div style="text-align:center">
+        <span class="stat-n">16</span>
+        <span class="stat-l">countries, ready now</span>
+      </div>
+      <div style="text-align:center">
+        <span class="stat-n">12+</span>
+        <span class="stat-l">open data sources</span>
+      </div>
+      <div style="text-align:center">
+        <span class="stat-n">0</span>
+        <span class="stat-l">black boxes</span>
+      </div>
+      <div style="text-align:center">
+        <span class="stat-n">1</span>
+        <span class="stat-l">config file per country</span>
+      </div>
+    </div>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;justify-content:center">
+      <span style="padding:9px 20px;border-radius:999px;background:rgba(243,199,90,0.12);color:#f3c75a;border:1px solid rgba(243,199,90,0.3);font-size:13px;font-weight:600">Skills passport → portable evidence</span>
+      <span style="padding:9px 20px;border-radius:999px;background:rgba(226,106,74,0.12);color:#f0a589;border:1px solid rgba(226,106,74,0.3);font-size:13px;font-weight:600">Risk lens → auditable signals</span>
+      <span style="padding:9px 20px;border-radius:999px;background:rgba(47,111,163,0.12);color:#84b8db;border:1px solid rgba(47,111,163,0.3);font-size:13px;font-weight:600">Opportunity graph → reachable paths</span>
+    </div>
+    <p class="finale" style="margin-top:48px">unmapped. — infrastructure, not just an app</p>
+  </section>
+
+</div>
+
+<!-- Navigation dots -->
+<div id="dots">
+  <button class="dot active" onclick="goTo(0)"></button>
+  <button class="dot" onclick="goTo(1)"></button>
+  <button class="dot" onclick="goTo(2)"></button>
+  <button class="dot" onclick="goTo(3)"></button>
+  <button class="dot" onclick="goTo(4)"></button>
+</div>
+
+<!-- Arrow buttons -->
+<div id="arrows">
+  <button class="arr" onclick="prev()">←</button>
+  <button class="arr" onclick="next()">→</button>
+</div>
+
+<script>
+const TOTAL = 5;
+let cur = 0;
+let timerRunning = false;
+let timerInterval = null;
+let elapsed = 0;
+const DURATION = 60;
+
+const slides = document.querySelectorAll('.slide');
+const dots = document.querySelectorAll('.dot');
+const bar = document.getElementById('timer-bar');
+const label = document.getElementById('timer-label');
+
+function goTo(n, direction = 1) {
+  if (n < 0 || n >= TOTAL) return;
+  slides[cur].classList.remove('active');
+  slides[cur].classList.add('out');
+  setTimeout(() => slides[cur].classList.remove('out'), 600);
+  cur = n;
+  slides[cur].classList.add('active');
+  dots.forEach((d, i) => d.classList.toggle('active', i === cur));
+
+  if (!timerRunning && cur > 0) startTimer();
+}
+function next() { goTo(Math.min(cur + 1, TOTAL - 1)); }
+function prev() { goTo(Math.max(cur - 1, 0)); }
+
+function startTimer() {
+  timerRunning = true;
+  timerInterval = setInterval(() => {
+    elapsed++;
+    const rem = Math.max(0, DURATION - elapsed);
+    const pct = Math.min(100, (elapsed / DURATION) * 100);
+    bar.style.width = pct + '%';
+    bar.style.background = pct > 80 ? '#c14e4e' : pct > 60 ? '#d3a44a' : 'var(--coral)';
+    const s = rem % 60, m = Math.floor(rem / 60);
+    label.textContent = `${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    if (rem === 0) { clearInterval(timerInterval); label.style.color = '#c14e4e'; }
+  }, 1000);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); next(); }
+  if (e.key === 'ArrowLeft')  { e.preventDefault(); prev(); }
+  if (e.key === 'Escape') goTo(0);
+});
+
+// Swipe support
+let touchX = null;
+document.addEventListener('touchstart', e => { touchX = e.touches[0].clientX; });
+document.addEventListener('touchend', e => {
+  if (touchX === null) return;
+  const dx = e.changedTouches[0].clientX - touchX;
+  if (Math.abs(dx) > 40) { dx < 0 ? next() : prev(); }
+  touchX = null;
+});
+</script>
+</body>
+</html>

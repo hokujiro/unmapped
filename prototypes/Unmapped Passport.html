@@ -1,0 +1,529 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Unmapped — Skills Passport</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400;1,9..144,500&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --ink:#16241c; --ink-soft:#2d3b32; --ink-mute:#5b6b62; --ink-faint:#8a978f;
+    --paper:#f6f1e7; --paper-2:#efe8d8; --paper-card:#fdfaf2;
+    --line:#d8cfba; --line-soft:#e6dec8;
+    --green:#1f5d3a; --green-2:#2d7a4d; --green-3:#3f9c69; --green-deep:#103a23;
+    --green-mist:#d6e7d9; --green-pale:#ecf3e8;
+    --coral:#e26a4a; --ocre:#d3a44a; --sky:#2f6fa3;
+    --sun:#f3c75a;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0;background:#1a1a1a;font-family:'Plus Jakarta Sans',system-ui,sans-serif;color:var(--ink)}
+  .display{font-family:'Fraunces',Georgia,serif;font-variation-settings:"SOFT" 100;letter-spacing:-0.02em;line-height:1}
+  .serif-italic{font-family:'Fraunces',Georgia,serif;font-style:italic}
+  .mono{font-family:'JetBrains Mono',monospace}
+</style>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script type="text/babel" src="ios-frame.jsx"></script>
+<script type="text/babel" src="design-canvas.jsx"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel">
+const { useState, useEffect, useRef } = React;
+
+/* ───────────────────────── shared visual atoms ───────────────────────── */
+
+const StripePh = ({ color = '#1f5d3a', label, style }) => (
+  <div style={{
+    backgroundColor: color,
+    backgroundImage: 'repeating-linear-gradient(45deg, rgba(255,255,255,0.08) 0, rgba(255,255,255,0.08) 1px, transparent 1px, transparent 14px)',
+    color: 'rgba(255,255,255,0.55)',
+    fontFamily: 'JetBrains Mono', fontSize: 10, textAlign: 'center',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    padding: 8, ...style
+  }}>{label}</div>
+);
+
+/* ──────────────────────────── MOBILE PASSPORT ────────────────────────────
+   The "wow" — full-screen takeover, large illustrative passport card,
+   layered chips, depth, scrollable body, sharing actions docked.
+─────────────────────────────────────────────────────────────────────────── */
+
+function PassportMobile() {
+  // tilt on touch / scroll for a tiny bit of life
+  const [tilt, setTilt] = useState({ x: -2, y: 3 });
+  const cardRef = useRef(null);
+  const [showProof, setShowProof] = useState(null); // skill key
+
+  return (
+    <div style={{
+      position:'absolute', inset:0,
+      background:'linear-gradient(180deg, #f6f1e7 0%, #efe8d8 60%, #ecf3e8 100%)',
+      overflowY:'auto', overflowX:'hidden',
+      fontFamily:"'Plus Jakarta Sans', sans-serif", color:'var(--ink)',
+      paddingTop:54 /* status bar */
+    }}>
+      {/* Top app chrome */}
+      <div style={{display:'flex', alignItems:'center', justifyContent:'space-between', padding:'14px 20px 8px'}}>
+        <div style={{
+          width:38, height:38, borderRadius:14, background:'#fff', border:'1px solid #e6dec8',
+          display:'flex', alignItems:'center', justifyContent:'center', fontSize:18, color:'#16241c'
+        }}>←</div>
+        <div style={{
+          fontFamily:'JetBrains Mono', fontSize:10, letterSpacing:1.5, color:'#8a978f', textTransform:'uppercase'
+        }}>Skills Passport</div>
+        <div style={{
+          width:38, height:38, borderRadius:14, background:'#fff', border:'1px solid #e6dec8',
+          display:'flex', alignItems:'center', justifyContent:'center', fontSize:16, color:'#16241c'
+        }}>⋯</div>
+      </div>
+
+      {/* Hero greeting */}
+      <div style={{padding:'14px 22px 6px'}}>
+        <p style={{margin:0, fontFamily:'JetBrains Mono', fontSize:10, letterSpacing:1.5, color:'#8a978f', textTransform:'uppercase'}}>Hey Amara —</p>
+        <h1 className="display" style={{margin:'6px 0 0', fontSize:32, fontWeight:500}}>
+          this is <span className="serif-italic" style={{color:'#1f5d3a'}}>you</span>,<br/>in the language<br/>employers <span style={{color:'#e26a4a'}}>speak.</span>
+        </h1>
+      </div>
+
+      {/* THE PASSPORT CARD — the wow object */}
+      <div style={{
+        margin:'24px 22px 14px', position:'relative', perspective:'1200px'
+      }}>
+        {/* shadow */}
+        <div style={{
+          position:'absolute', inset:'18px 14px -10px 14px',
+          background:'radial-gradient(40% 60% at 50% 50%, rgba(16,58,35,0.35), transparent 70%)',
+          filter:'blur(14px)', zIndex:0
+        }}/>
+        {/* stacked echoes for depth */}
+        <div style={{
+          position:'absolute', inset:'-6px 12px 12px -8px', borderRadius:28,
+          background:'#f3c75a', transform:'rotate(-3deg)', zIndex:1
+        }}/>
+        <div style={{
+          position:'absolute', inset:'2px -10px 6px 10px', borderRadius:28,
+          background:'#e26a4a', transform:'rotate(2deg)', zIndex:1
+        }}/>
+
+        {/* main card */}
+        <div ref={cardRef} style={{
+          position:'relative', zIndex:2,
+          borderRadius:28,
+          background:'linear-gradient(165deg, #1f5d3a 0%, #103a23 100%)',
+          color:'#fff',
+          padding:'22px 22px 18px',
+          overflow:'hidden',
+          transform:`rotate(${tilt.x}deg)`,
+          boxShadow:'0 30px 60px -30px rgba(16,58,35,0.6), inset 0 1px 0 rgba(255,255,255,0.08)'
+        }}>
+          {/* watermark spirograph */}
+          <svg width="280" height="280" viewBox="0 0 200 200" style={{position:'absolute', right:-70, bottom:-70, opacity:0.18}}>
+            <g fill="none" stroke="#f3c75a" strokeWidth="0.6">
+              {Array.from({length:32}).map((_,i)=>(
+                <ellipse key={i} cx="100" cy="100" rx="70" ry="30" transform={`rotate(${i*11.25} 100 100)`}/>
+              ))}
+            </g>
+          </svg>
+          {/* corner stamp */}
+          <div style={{
+            position:'absolute', top:18, right:18, width:62, height:62, borderRadius:'50%',
+            border:'1.5px dashed rgba(243,199,90,0.7)', display:'flex', alignItems:'center', justifyContent:'center',
+            transform:'rotate(-12deg)'
+          }}>
+            <div style={{textAlign:'center', color:'#f3c75a', fontFamily:'JetBrains Mono', fontSize:8, letterSpacing:1, lineHeight:1.15}}>
+              VERIFIED<br/>· EVIDENCE ·<br/>2026
+            </div>
+          </div>
+
+          <div style={{display:'flex', alignItems:'center', gap:8, fontFamily:'JetBrains Mono', fontSize:9, letterSpacing:1.8, opacity:0.75}}>
+            <svg width="14" height="14" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" stroke="#f3c75a" strokeWidth="2" fill="none"/><path d="M16 6 L18.5 14 L26 16 L18.5 18 L16 26 L13.5 18 L6 16 L13.5 14 Z" fill="#f3c75a"/></svg>
+            UNMAPPED · SKILLS PASSPORT
+          </div>
+
+          {/* portrait + name */}
+          <div style={{display:'flex', alignItems:'flex-end', gap:14, marginTop:60}}>
+            <div style={{
+              width:78, height:96, borderRadius:14,
+              overflow: 'hidden',
+              border:'2px solid rgba(243,199,90,0.7)',
+              boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
+            }}>
+              <img src="./uploads/amara_portrait.png" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+            <div style={{flex:1, paddingBottom:4}}>
+              <p className="display" style={{margin:0, fontSize:30, fontWeight:500, letterSpacing:'-0.02em'}}>Amara K.</p>
+              <p style={{margin:'2px 0 0', fontSize:13, color:'rgba(255,255,255,0.7)'}}>22 · Accra, Ghana</p>
+              <div style={{display:'flex', gap:6, marginTop:8}}>
+                <span style={{padding:'3px 10px', borderRadius:999, background:'rgba(243,199,90,0.18)', color:'#f3c75a', fontSize:10, fontWeight:600, letterSpacing:0.3}}>
+                  ✦ informal-sector verified
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* divider with serial */}
+          <div style={{display:'flex', alignItems:'center', gap:10, margin:'18px 0 14px'}}>
+            <span style={{flex:1, height:1, background:'linear-gradient(90deg, transparent, rgba(243,199,90,0.5), transparent)'}}/>
+            <span className="mono" style={{fontSize:9, color:'rgba(243,199,90,0.85)', letterSpacing:1.5}}>UMP·GHA·24·0921·AK</span>
+            <span style={{flex:1, height:1, background:'linear-gradient(90deg, transparent, rgba(243,199,90,0.5), transparent)'}}/>
+          </div>
+
+          {/* big numbers */}
+          <div style={{display:'grid', gridTemplateColumns:'repeat(3, 1fr)', gap:8}}>
+            {[
+              {n:'5', l:'skills'},
+              {n:'3', l:'durable'},
+              {n:'2', l:'languages'},
+            ].map(s=>(
+              <div key={s.l} style={{
+                background:'rgba(255,255,255,0.06)', border:'1px solid rgba(243,199,90,0.18)',
+                borderRadius:14, padding:'10px 12px'
+              }}>
+                <p className="display" style={{margin:0, fontSize:30, fontWeight:500, color:'#f3c75a'}}>{s.n}</p>
+                <p style={{margin:'2px 0 0', fontSize:10, letterSpacing:1.4, color:'rgba(255,255,255,0.65)', textTransform:'uppercase'}}>{s.l}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* the story quote */}
+          <div style={{
+            marginTop:14, padding:'12px 14px', borderRadius:14,
+            background:'rgba(255,255,255,0.06)', borderLeft:'3px solid #f3c75a'
+          }}>
+            <p className="serif-italic" style={{margin:0, fontSize:14, lineHeight:1.5, color:'rgba(255,255,255,0.92)'}}>
+              "I help my uncle at his electronics stall. I fix mobile phones — screens, batteries, the small board work."
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Quick chips strip */}
+      <div style={{display:'flex', gap:8, padding:'8px 22px 6px', overflowX:'auto'}}>
+        {['● durable','● durable','○ AI-vulnerable','○ AI-vulnerable','● durable'].map((c,i)=>(
+          <span key={i} style={{
+            flexShrink:0,
+            padding:'7px 12px', borderRadius:999, fontSize:11, fontWeight:600,
+            background: c.startsWith('●') ? '#ecf3e8' : '#fbe6dd',
+            color: c.startsWith('●') ? '#1f5d3a' : '#b8492a',
+            border:'1px solid', borderColor: c.startsWith('●') ? '#c8debc' : '#f3c8b6',
+            whiteSpace:'nowrap'
+          }}>{c}</span>
+        ))}
+      </div>
+
+      {/* Skills section title */}
+      <div style={{padding:'18px 22px 6px', display:'flex', alignItems:'baseline', justifyContent:'space-between'}}>
+        <h2 className="display" style={{margin:0, fontSize:24, fontWeight:500}}>What you can do</h2>
+        <span style={{fontSize:11, color:'#8a978f'}}>5 verified</span>
+      </div>
+
+      {/* Skill cards */}
+      <div style={{padding:'4px 22px 16px', display:'flex', flexDirection:'column', gap:10}}>
+        {[
+          {name:'Mobile electronics repair', tag:'ESCO ▸ S6.2.1', durable:true, evidence:'"I fix mobile phones — screens, batteries, the small board work." · hands-on, place + tools', icon:'🔧'},
+          {name:'Customer service', tag:'ESCO ▸ S1.6.1', durable:true, evidence:'"I deal with customers when they come in angry, calm them down." · high-context comms', icon:'🗣️'},
+          {name:'Inventory & stock tracking', tag:'ESCO ▸ S5.6.2', durable:false, evidence:'"I keep a notebook of which parts we have." · automatable, pair with durable skills', icon:'📒'},
+          {name:'Social-media micro-marketing', tag:'ESCO ▸ S5.5.4', durable:false, evidence:'"Sometimes I post our shop on WhatsApp." · light evidence, growing fast', icon:'📱'},
+          {name:'Small-business operations', tag:'O*NET 41-1011', durable:true, evidence:'Multi-role context: handles people, money and decisions on a stall.', icon:'⚖️'},
+        ].map((s,i)=>{
+          const open = showProof === i;
+          return (
+            <div key={s.name} style={{
+              background:'#fdfaf2', border:'1px solid #e6dec8', borderRadius:18, overflow:'hidden'
+            }}>
+              <button onClick={()=>setShowProof(open?null:i)} style={{
+                width:'100%', textAlign:'left', background:'transparent', border:'none', padding:14,
+                display:'flex', gap:12, alignItems:'center', cursor:'pointer', fontFamily:'inherit'
+              }}>
+                <div style={{
+                  width:42, height:42, borderRadius:12,
+                  background: s.durable ? '#ecf3e8' : '#fbe6dd',
+                  display:'flex', alignItems:'center', justifyContent:'center', fontSize:18
+                }}>{s.icon}</div>
+                <div style={{flex:1, minWidth:0}}>
+                  <p style={{margin:0, fontWeight:600, fontSize:14, color:'#16241c'}}>{s.name}</p>
+                  <p className="mono" style={{margin:'2px 0 0', fontSize:9.5, color:'#8a978f'}}>{s.tag}</p>
+                </div>
+                <span style={{
+                  padding:'4px 9px', borderRadius:999, fontSize:10, fontWeight:600,
+                  background: s.durable ? '#1f5d3a' : '#e26a4a', color:'#fff'
+                }}>{s.durable ? 'durable' : 'AI-risk'}</span>
+                <span style={{color:'#8a978f', marginLeft:4, transform:open?'rotate(180deg)':'rotate(0)', transition:'transform .2s'}}>⌄</span>
+              </button>
+              {open && (
+                <div style={{padding:'0 14px 14px'}}>
+                  <div style={{padding:'10px 12px', background:'#f6f1e7', borderRadius:10}}>
+                    <p style={{margin:0, fontSize:9.5, fontWeight:700, color:'#8a978f', letterSpacing:1, textTransform:'uppercase'}}>Why we believe this</p>
+                    <p className="serif-italic" style={{margin:'4px 0 0', fontSize:13, color:'#2d3b32', lineHeight:1.5}}>{s.evidence}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* Languages */}
+      <div style={{padding:'10px 22px 6px'}}>
+        <h2 className="display" style={{margin:0, fontSize:22, fontWeight:500}}>Languages</h2>
+      </div>
+      <div style={{padding:'8px 22px 16px', display:'flex', gap:10}}>
+        {[{l:'Twi', lev:'Native', dot:'#1f5d3a'}, {l:'English', lev:'B1 · conversational', dot:'#3f9c69'}].map(L=>(
+          <div key={L.l} style={{flex:1, padding:'12px 14px', background:'#fdfaf2', border:'1px solid #e6dec8', borderRadius:16}}>
+            <p style={{margin:0, fontWeight:700, fontSize:14}}>{L.l}</p>
+            <div style={{display:'flex', alignItems:'center', gap:6, marginTop:6}}>
+              <span style={{width:8, height:8, borderRadius:999, background:L.dot}}/>
+              <span style={{fontSize:11, color:'#5b6b62'}}>{L.lev}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Why it matters */}
+      <div style={{margin:'8px 22px 22px', padding:'18px 18px 16px', borderRadius:20, background:'#fbe6dd', border:'1px solid #f3c8b6'}}>
+        <p style={{margin:0, fontFamily:'JetBrains Mono', fontSize:9, letterSpacing:1.5, color:'#b8492a', textTransform:'uppercase'}}>What changes with this passport</p>
+        <p className="serif-italic" style={{margin:'8px 0 0', fontSize:16, lineHeight:1.5, color:'#7d3520'}}>
+          Until today your skills lived in a notebook. Now they're searchable by 1,247 employers and NGOs across West Africa — without anyone seeing your name unless you say so.
+        </p>
+      </div>
+
+      {/* Sticky-feel bottom action bar */}
+      <div style={{
+        position:'sticky', bottom:0, padding:'14px 18px 28px',
+        background:'linear-gradient(180deg, transparent, #ecf3e8 30%)',
+        display:'flex', gap:10
+      }}>
+        <button style={{
+          flex:1, padding:'14px 18px', borderRadius:18, border:'none',
+          background:'#1f5d3a', color:'#fff', fontWeight:700, fontSize:14, fontFamily:'inherit',
+          display:'flex', alignItems:'center', justifyContent:'center', gap:8,
+          boxShadow:'0 12px 24px -10px rgba(31,93,58,0.5)'
+        }}>
+          <span>↗</span> Share
+        </button>
+        <button style={{
+          width:54, padding:'14px 0', borderRadius:18, border:'1px solid #c8debc',
+          background:'#fff', color:'#1f5d3a', fontSize:18, fontFamily:'inherit'
+        }}>↓</button>
+        <button style={{
+          width:54, padding:'14px 0', borderRadius:18, border:'1px solid #c8debc',
+          background:'#fff', color:'#1f5d3a', fontSize:18, fontFamily:'inherit'
+        }}>⬚</button>
+      </div>
+    </div>
+  );
+}
+
+/* ──────────────────────────── PRINTABLE PDF ────────────────────────────
+   A4 portrait, 794×1123 at 96dpi. Quiet, formal, but with personality.
+   Single page that an employer or ministry can print or attach.
+─────────────────────────────────────────────────────────────────────── */
+
+function PassportPdf() {
+  return (
+    <div style={{
+      width: 794, height: 1123, background:'#f6f1e7', position:'relative',
+      fontFamily:"'Plus Jakarta Sans', sans-serif", color:'var(--ink)',
+      padding:'48px 52px', boxSizing:'border-box', overflow:'hidden'
+    }}>
+      {/* Subtle background ornament */}
+      <svg width="600" height="600" viewBox="0 0 200 200" style={{position:'absolute', right:-180, top:-120, opacity:0.06, pointerEvents:'none'}}>
+        <g fill="none" stroke="#1f5d3a" strokeWidth="0.5">
+          {Array.from({length:40}).map((_,i)=>(
+            <ellipse key={i} cx="100" cy="100" rx="80" ry="32" transform={`rotate(${i*9} 100 100)`}/>
+          ))}
+        </g>
+      </svg>
+
+      {/* Header */}
+      <header style={{display:'flex', justifyContent:'space-between', alignItems:'center', borderBottom:'1px solid #d8cfba', paddingBottom:14}}>
+        <div style={{display:'flex', alignItems:'center', gap:8}}>
+          <svg width="22" height="22" viewBox="0 0 32 32"><circle cx="16" cy="16" r="14" stroke="#1f5d3a" strokeWidth="2" fill="none"/><path d="M16 6 L18.5 14 L26 16 L18.5 18 L16 26 L13.5 18 L6 16 L13.5 14 Z" fill="#1f5d3a"/></svg>
+          <span className="display" style={{fontSize:18, fontWeight:600, letterSpacing:'-0.02em'}}>unmapped<span style={{color:'#e26a4a'}}>.</span></span>
+        </div>
+        <div style={{textAlign:'right'}}>
+          <p className="mono" style={{margin:0, fontSize:9, letterSpacing:1.5, color:'#8a978f', textTransform:'uppercase'}}>Skills Passport · Page 1 of 1</p>
+          <p className="mono" style={{margin:'2px 0 0', fontSize:9, color:'#8a978f'}}>UMP·GHA·24·0921·AK</p>
+        </div>
+      </header>
+
+      {/* Title block */}
+      <section style={{display:'grid', gridTemplateColumns:'1.4fr 1fr', gap:30, marginTop:28, alignItems:'start'}}>
+        <div>
+          <p className="mono" style={{margin:0, fontSize:10, letterSpacing:1.5, color:'#8a978f', textTransform:'uppercase'}}>Issued · 26 April 2026</p>
+          <h1 className="display" style={{margin:'10px 0 4px', fontSize:54, fontWeight:500, lineHeight:0.96}}>
+            Amara <span style={{color:'#e26a4a'}}>K.</span>
+          </h1>
+          <p style={{margin:'8px 0 0', fontSize:14, color:'#2d3b32'}}>22 years old · Accra, Ghana · informal-sector verified</p>
+          <p className="serif-italic" style={{margin:'18px 0 0', fontSize:16, lineHeight:1.55, color:'#2d3b32', maxWidth:380, borderLeft:'2px solid #e26a4a', paddingLeft:14}}>
+            "I help my uncle at his electronics stall. I fix mobile phones — screens, batteries, the small board work. I deal with customers when they come in angry, calm them down."
+          </p>
+          <p style={{margin:'8px 0 0', fontSize:11, color:'#8a978f'}}>— self-described, in own words</p>
+        </div>
+        {/* Mini visual passport */}
+        <div style={{
+          borderRadius:20, background:'linear-gradient(165deg, #1f5d3a, #103a23)', color:'#fff',
+          padding:18, position:'relative', overflow:'hidden',
+          boxShadow:'0 16px 40px -20px rgba(16,58,35,0.5)'
+        }}>
+          <svg width="180" height="180" viewBox="0 0 200 200" style={{position:'absolute', right:-60, bottom:-60, opacity:0.2}}>
+            <g fill="none" stroke="#f3c75a" strokeWidth="0.5">
+              {Array.from({length:24}).map((_,i)=>(
+                <ellipse key={i} cx="100" cy="100" rx="70" ry="28" transform={`rotate(${i*15} 100 100)`}/>
+              ))}
+            </g>
+          </svg>
+          <div style={{display:'flex', alignItems:'center', gap:6, fontFamily:'JetBrains Mono', fontSize:8, letterSpacing:1.5, opacity:0.75}}>
+            <span style={{width:8, height:8, borderRadius:999, background:'#f3c75a'}}/>
+            UNMAPPED · SKILLS PASSPORT
+          </div>
+          <div style={{display:'flex', gap:10, marginTop:18, alignItems:'flex-end'}}>
+            <div style={{
+              width:54, height:66, borderRadius:9, border:'1.5px solid rgba(243,199,90,0.6)',
+              overflow: 'hidden'
+            }}>
+              <img src="./uploads/amara_portrait.png" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+            </div>
+            <div>
+              <p className="display" style={{margin:0, fontSize:22, fontWeight:500}}>Amara K.</p>
+              <p style={{margin:'2px 0 0', fontSize:10, color:'rgba(255,255,255,0.7)'}}>🇬🇭 Ghana</p>
+            </div>
+          </div>
+          <div style={{display:'grid', gridTemplateColumns:'repeat(3,1fr)', gap:6, marginTop:16}}>
+            {[{n:'5',l:'skills'},{n:'3',l:'durable'},{n:'2',l:'lang.'}].map(s=>(
+              <div key={s.l} style={{borderRadius:9, padding:'8px 9px', background:'rgba(255,255,255,0.07)', border:'1px solid rgba(243,199,90,0.2)'}}>
+                <p className="display" style={{margin:0, fontSize:22, fontWeight:500, color:'#f3c75a'}}>{s.n}</p>
+                <p style={{margin:0, fontSize:8, letterSpacing:1.2, color:'rgba(255,255,255,0.6)', textTransform:'uppercase'}}>{s.l}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Skills table */}
+      <section style={{marginTop:28}}>
+        <div style={{display:'flex', alignItems:'baseline', justifyContent:'space-between'}}>
+          <h2 className="display" style={{margin:0, fontSize:22, fontWeight:500}}>Verified skills</h2>
+          <span className="mono" style={{fontSize:9, letterSpacing:1.5, color:'#8a978f', textTransform:'uppercase'}}>ESCO · O*NET · ISCO-08</span>
+        </div>
+        <div style={{marginTop:12, border:'1px solid #d8cfba', borderRadius:14, overflow:'hidden', background:'#fdfaf2'}}>
+          {/* row */}
+          {[
+            {name:'Mobile electronics repair', code:'ESCO S6.2.1 · O*NET 49-2094', dur:true, ev:'Hands-on, with place and tools.'},
+            {name:'Customer service', code:'ESCO S1.6.1', dur:true, ev:'High-context, de-escalating language with customers.'},
+            {name:'Small-business operations', code:'O*NET 41-1011 (related)', dur:true, ev:'Multi-role: people, money, decisions on a stall.'},
+            {name:'Inventory & stock tracking', code:'ESCO S5.6.2', dur:false, ev:'Notebook system; structurally automatable.'},
+            {name:'Social-media micro-marketing', code:'ESCO S5.5.4', dur:false, ev:'Posts shop on WhatsApp; growing skill area.'},
+          ].map((r,i,arr)=>(
+            <div key={r.name} style={{
+              display:'grid', gridTemplateColumns:'2fr 1fr 110px',
+              padding:'12px 14px',
+              borderTop: i===0 ? 'none' : '1px solid #e6dec8',
+              alignItems:'center', gap:10
+            }}>
+              <div>
+                <p style={{margin:0, fontWeight:600, fontSize:13}}>{r.name}</p>
+                <p className="serif-italic" style={{margin:'4px 0 0', fontSize:11.5, color:'#5b6b62', lineHeight:1.45}}>{r.ev}</p>
+              </div>
+              <p className="mono" style={{margin:0, fontSize:9.5, color:'#8a978f'}}>{r.code}</p>
+              <span style={{
+                justifySelf:'end', padding:'4px 10px', borderRadius:999, fontSize:10, fontWeight:600,
+                background: r.dur ? '#ecf3e8' : '#fbe6dd',
+                color: r.dur ? '#1f5d3a' : '#b8492a',
+                border:'1px solid', borderColor: r.dur ? '#c8debc' : '#f3c8b6'
+              }}>
+                {r.dur ? '● durable' : '○ AI-vulnerable'}
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Two-up: education & languages */}
+      <section style={{marginTop:22, display:'grid', gridTemplateColumns:'1fr 1fr', gap:14}}>
+        <div style={{padding:14, borderRadius:14, background:'#fdfaf2', border:'1px solid #e6dec8'}}>
+          <p className="mono" style={{margin:0, fontSize:9, letterSpacing:1.5, color:'#8a978f', textTransform:'uppercase'}}>Education</p>
+          <p style={{margin:'8px 0 0', fontSize:13, fontWeight:600}}>Upper secondary — completed</p>
+          <p style={{margin:'2px 0 0', fontSize:11.5, color:'#5b6b62'}}>Accra Senior High School · 2022</p>
+          <div style={{height:1, background:'#e6dec8', margin:'10px 0'}}/>
+          <p className="mono" style={{margin:0, fontSize:9, letterSpacing:1.5, color:'#8a978f', textTransform:'uppercase'}}>Availability</p>
+          <p style={{margin:'8px 0 0', fontSize:13, fontWeight:600}}>Full-time · willing to relocate within Ghana</p>
+        </div>
+        <div style={{padding:14, borderRadius:14, background:'#fdfaf2', border:'1px solid #e6dec8'}}>
+          <p className="mono" style={{margin:0, fontSize:9, letterSpacing:1.5, color:'#8a978f', textTransform:'uppercase'}}>Languages</p>
+          <div style={{display:'flex', flexDirection:'column', gap:8, marginTop:8}}>
+            {[{l:'Twi', lev:'Native'}, {l:'English', lev:'B1 · conversational'}].map(L=>(
+              <div key={L.l} style={{display:'flex', justifyContent:'space-between', alignItems:'center'}}>
+                <span style={{fontWeight:600, fontSize:13}}>{L.l}</span>
+                <span style={{fontSize:11.5, color:'#5b6b62'}}>{L.lev}</span>
+              </div>
+            ))}
+          </div>
+          <div style={{height:1, background:'#e6dec8', margin:'10px 0'}}/>
+          <p className="mono" style={{margin:0, fontSize:9, letterSpacing:1.5, color:'#8a978f', textTransform:'uppercase'}}>Country profile</p>
+          <p style={{margin:'8px 0 0', fontSize:11.5, color:'#5b6b62', lineHeight:1.5}}>Ghana — informal employment 67%. Sectors aligned to this profile: trade & retail, renewable energy, telco services.</p>
+        </div>
+      </section>
+
+      {/* Footer transparency */}
+      <footer style={{position:'absolute', left:52, right:52, bottom:36}}>
+        <div style={{height:1, background:'#d8cfba', marginBottom:14}}/>
+        <div style={{display:'grid', gridTemplateColumns:'1.5fr 1fr', gap:18, alignItems:'flex-end'}}>
+          <div>
+            <p className="mono" style={{margin:0, fontSize:9, letterSpacing:1.5, color:'#8a978f', textTransform:'uppercase'}}>Methodology</p>
+            <p style={{margin:'6px 0 0', fontSize:10.5, color:'#5b6b62', lineHeight:1.55}}>
+              Skills extracted from a self-narrated story by an LLM-assisted classifier and aligned to ESCO v1.2.0 / O*NET 28.0. Durability rating draws on ILO Working Paper 140 (2024) — task-level AI exposure scores. Verified at issuance; revocable.
+            </p>
+          </div>
+          <div style={{
+            border:'1.5px dashed #d8cfba', borderRadius:12, padding:'10px 12px',
+            display:'flex', alignItems:'center', gap:10
+          }}>
+            {/* QR placeholder */}
+            <div style={{
+              width:54, height:54, background:'#16241c', borderRadius:6,
+              backgroundImage:'repeating-linear-gradient(0deg, #f6f1e7 0 4px, transparent 4px 8px), repeating-linear-gradient(90deg, #f6f1e7 0 4px, transparent 4px 8px)'
+            }}/>
+            <div>
+              <p className="mono" style={{margin:0, fontSize:9, letterSpacing:1.5, color:'#8a978f', textTransform:'uppercase'}}>Verify</p>
+              <p style={{margin:'4px 0 0', fontSize:11, fontWeight:600}}>unmapped.org/v/<br/>UMP·GHA·24·0921·AK</p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+/* ──────────────────────────── CANVAS ──────────────────────────── */
+
+const { DesignCanvas, DCSection, DCArtboard } = window;
+
+function App(){
+  return (
+    <DesignCanvas title="Skills Passport — mobile + PDF" subtitle="The wow object, two ways">
+      <DCSection id="a" title="The mobile passport · Amara's screen">
+        <DCArtboard id="m1" label="Skills Passport — full screen scroll" width={420} height={900}>
+          <window.IOSDevice variant="dynamic-island" theme="light" statusBar={{ time:'9:41' }}>
+            <PassportMobile/>
+          </window.IOSDevice>
+        </DCArtboard>
+      </DCSection>
+
+      <DCSection id="b" title="The printable PDF · what you'd attach to an email">
+        <DCArtboard id="p1" label="Skills Passport · A4 portrait · single page" width={794} height={1123}>
+          <PassportPdf/>
+        </DCArtboard>
+      </DCSection>
+    </DesignCanvas>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
